@@ -1,43 +1,39 @@
-# **Título do Projeto: Gaia \- Ecossistema de Gestão de Carreira e Bem-Estar**
+# **Projeto Gaia: O Futuro do Trabalho**
 
-## **1\. Resumo Executivo**
+<img width="1915" height="907" alt="Screenshot_11" src="https://github.com/user-attachments/assets/72ded262-8cf7-4e78-96eb-57a5ffd61137" />
 
-O **Gaia** é uma plataforma de inteligência artificial projetada para ser uma "guardiã de carreira" no cenário futuro do trabalho. Diferente de plataformas tradicionais de cursos ou vagas, o Gaia integra o desenvolvimento técnico (*upskilling/reskilling*) com o monitoramento de saúde mental e bem-estar. A proposta aborda a necessidade de preparar profissionais para um mercado volátil, garantindo que a alta performance não custe a saúde humana, promovendo inclusão produtiva e aprendizado contínuo em ambientes híbridos.
+**Uma plataforma de Inteligência Artificial focada em Gestão de Carreira, Reskilling e Bem-Estar para o mercado de trabalho híbrido.**
 
-## **2\. O Problema**
+## **Acesso Rápido (Demonstração)**
 
-O futuro do trabalho apresenta dois grandes desafios paradoxais:
+Para visualizar o projeto rodando agora mesmo, sem instalações, acesse o link abaixo:
 
-1. **Obsolescência Acelerada:** A necessidade constante de aprender novas tecnologias gera ansiedade e exige requalificação rápida (*reskilling*).  
-2. Crise de Bem-Estar: O trabalho remoto e a hiperconectividade aumentaram os índices de burnout e isolamento.  
-   Como preparar jovens e profissionais para profissões que ainda não existem sem gerar exaustão física e mental?
+### [**CLIQUE AQUI PARA ABRIR O PROTÓTIPO ONLINE**](https://ryuzeen.github.io/GaiaProject/prototipoexecutavel/)
 
-## **3\. A Solução: Gaia**
+## **📂 Estrutura do Projeto e Como Executar**
 
-Gaia é um assistente pessoal de carreira baseado em IA que atua em três pilares:
+Este repositório contém duas versões do projeto para facilitar a avaliação técnica e a visualização:
 
-### **A. Mentor de Carreira Preditivo (IA como Parceira)**
+### **1\. 🟢 Versão Executável (HTML Único) \- Recomendada para Visualização**
 
-Utilizando análise de dados globais, a Gaia prevê tendências de mercado e sugere "micro-certificações" personalizadas. Se a IA detecta que a área do usuário está sendo automatizada, ela sugere um caminho de transição suave para uma nova função emergente.
+Para garantir que o protótipo rode em qualquer computador sem necessidade de configurar ambiente Node.js, compilamos o React e Tailwind em um arquivo único.
 
-### **B. Monitor de Energia e Bem-Estar (Saúde Mental)**
+* **Arquivo:** index.html (ou pasta /prototipoexecutavel)  
+* **Como usar:**  
+  1. Acesse o [Link da Demo Online](https://ryuzeen.github.io/GaiaProject/prototipoexecutavel/) acima; **OU**  
+  2. Baixe o arquivo index.html e abra com dois cliques no seu navegador (Chrome, Edge, etc).  
 
-Através de inputs do usuário e análise de padrões de trabalho (tempo de tela, foco), a Gaia sugere pausas regenerativas e bloqueia notificações quando o risco de estresse é alto. Ela gamifica o descanso tanto quanto a produtividade.
+### **2\. 🔵 Versão Código Fonte (JSX) \- Para Análise Técnica**
 
-### **C. Conexão Humana (Ambientes Híbridos)**
+Para professores ou avaliadores que desejam auditar a lógica do código, a estrutura dos componentes e o uso de Hooks do React.
 
-Para combater o isolamento do trabalho remoto, a plataforma conecta o usuário a mentores humanos e grupos de estudo (squads) que compartilham os mesmos objetivos e valores, fortalecendo o networking real.
+* **Arquivo:** App.jsx (dentro da pasta do projeto ou zip)  
+* **Como usar:** Este arquivo contém o código puro. Ele deve ser visualizado em um editor de código (VS Code) para leitura da lógica.  
+* **Nota:** Se desejar rodar esta versão nativamente, é necessário um ambiente create-react-app ou vite configurado.
 
-## **4\. Inovação e Tecnologia**
+## **🛠️ Tecnologias Utilizadas**
 
-* **Inteligência Artificial:** Algoritmos de recomendação para trilhas de aprendizado adaptativas.  
-* **Gamificação:** Sistema de níveis que recompensa não apenas cursos finalizados, mas também dias de equilíbrio mental e colaboração com colegas.  
-* **Interface Adaptativa:** Design inclusivo e acessível para diferentes gerações e necessidades cognitivas.
-
-## **5\. Impacto Social e Inclusão**
-
-O projeto democratiza o acesso à orientação de carreira de alta qualidade, antes restrita a executivos com coaches caros. Para populações vulneráveis, a Gaia mapeia habilidades transferíveis, ajudando na inserção em empregos da economia verde e digital, reduzindo barreiras de entrada.
-
-## **6\. Conclusão**
-
-O futuro do trabalho não é sobre humanos competindo com máquinas, mas sobre humanos alavancados por máquinas para viverem melhor. O Projeto Gaia coloca a tecnologia a serviço da sustentabilidade humana, preparando organizações e indivíduos para um mundo onde o maior ativo não é apenas o que você sabe, mas como você se sente enquanto trabalha.
+* **React.js:** Lógica de estados (useState, useEffect) e componentes.  
+* **Tailwind CSS:** Estilização moderna e responsiva via CDN.  
+* **Lucide React:** Biblioteca de ícones vetoriais.  
+* **Babel Standalone:** Para compilação do JSX em tempo real no navegador (na versão HTML).
