@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaia - Futuro do Trabalho</title>
+    
+    <!-- Carrega Tailwind CSS (Estilos) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Carrega React e ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Carrega Babel (para entender o código React no navegador) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        /* Esconde a barra de rolagem mas permite rolar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+    </style>
+</head>
+<body class="bg-slate-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // --- Ícones SVG (Para não depender de bibliotecas externas complexas) ---
+        const Leaf = ({ className }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
+        );
+        const Activity = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>;
+        const Brain = ({ size = 20, className }) => <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.5A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.5A2.5 2.5 0 0 0 14.5 2Z"/></svg>;
+        const Coffee = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 8h1a4 4 0 1 1 0 8h-1"/><path d="M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4Z"/><line x1="6" x2="6" y1="2" y2="4"/><line x1="10" x2="10" y1="2" y2="4"/><line x1="14" x2="14" y1="2" y2="4"/></svg>;
+        const Users = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
+        const TrendingUp = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>;
+        const Award = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>;
+        const Menu = ({ className }) => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>;
+
+        // --- COMPONENTES DO SISTEMA ---
+
+        const SidebarItem = ({ icon, label, active, onClick }) => (
+            <button 
+                onClick={onClick}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${active ? 'bg-emerald-50 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'}`}
+            >
+                {icon}
+                {label}
+            </button>
+        );
+
+        const Card = ({ title, children, icon }) => (
+            <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                <div className="flex justify-between items-start mb-4">
+                    <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wider">{title}</h3>
+                    {icon}
+                </div>
+                {children}
+            </div>
+        );
+
+        const JobItem = ({ title, growth, color }) => (
+            <li className="flex justify-between items-center">
+                <span className="text-slate-600 font-medium text-sm">{title}</span>
+                <span className={`text-xs font-bold px-2 py-1 rounded-md ${color}`}>{growth}</span>
+            </li>
+        );
+
+        const Bar = ({ height, active, label }) => (
+            <div className="flex flex-col items-center gap-2 flex-1">
+                <div className={`w-full rounded-t-lg transition-all duration-500 ${height} ${active ? 'bg-rose-500' : 'bg-slate-200'}`} />
+                <span className="text-[10px] font-bold text-slate-400 uppercase">{label}</span>
+            </div>
+        );
+
+        const PathItem = ({ status, title, desc }) => (
+            <div className="flex gap-4">
+                <div className="flex flex-col items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 z-10 ${
+                        status === 'completed' ? 'bg-emerald-500 border-emerald-500 text-white' :
+                        status === 'current' ? 'bg-white border-indigo-500 text-indigo-500' :
+                        'bg-slate-100 border-slate-300 text-slate-300'
+                    }`}>
+                        {status === 'completed' ? '✓' : status === 'current' ? '●' : '○'}
+                    </div>
+                    <div className="w-0.5 h-full bg-slate-200 -mt-2" />
+                </div>
+                <div className="pb-8">
+                    <h4 className={`font-bold ${status === 'locked' ? 'text-slate-400' : 'text-slate-800'}`}>{title}</h4>
+                    <p className="text-sm text-slate-500">{desc}</p>
+                </div>
+            </div>
+        );
+
+        // --- SUB-TELAS ---
+
+        const Dashboard = () => (
+            <div className="space-y-6 animate-fade-in">
+                <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
+                    <div>
+                        <h2 className="text-2xl font-bold text-slate-900">Olá, Grupo 👋</h2>
+                        <p className="text-slate-500">Seu índice de prontidão para o futuro é <span className="text-emerald-600 font-bold">Alto</span>.</p>
+                    </div>
+                    <div className="flex gap-3">
+                        <span className="px-4 py-2 bg-white rounded-full border border-slate-200 text-sm font-medium text-slate-600 shadow-sm">
+                            🌱 Sustentabilidade: Nível 4
+                        </span>
+                        <span className="px-4 py-2 bg-white rounded-full border border-slate-200 text-sm font-medium text-slate-600 shadow-sm">
+                            🚀 Tech Skills: 85%
+                        </span>
+                    </div>
+                </div>
+
+                <div className="grid md:grid-cols-3 gap-6">
+                    <Card title="Próximas Profissões Detectadas" icon={<TrendingUp className="text-indigo-500" />}>
+                        <ul className="space-y-3 mt-2">
+                            <JobItem title="Arquiteto de Realidade Mista" growth="+45%" color="bg-indigo-100 text-indigo-700" />
+                            <JobItem title="Mediador de Ética em IA" growth="+30%" color="bg-indigo-100 text-indigo-700" />
+                            <JobItem title="Gestor de Bio-Dados" growth="+12%" color="bg-indigo-100 text-indigo-700" />
+                        </ul>
+                    </Card>
+
+                    <Card title="Seu Equilíbrio Vital" icon={<Activity />}>
+                        <div className="mt-4 flex items-end justify-between h-24 gap-2">
+                            <Bar height="h-12" label="Seg" />
+                            <Bar height="h-16" label="Ter" />
+                            <Bar height="h-20" label="Qua" />
+                            <Bar height="h-14" label="Qui" />
+                            <Bar height="h-24" active label="Hoje" />
+                        </div>
+                        <p className="text-xs text-center text-slate-500 mt-2">Você está 15% mais equilibrado que semana passada.</p>
+                    </Card>
+
+                    <Card title="Meta da Semana" icon={<Award className="text-amber-500" />}>
+                        <div className="mt-2 text-center">
+                            <div className="w-20 h-20 rounded-full border-4 border-emerald-100 border-t-emerald-500 mx-auto flex items-center justify-center">
+                                <span className="text-lg font-bold text-emerald-600">75%</span>
+                            </div>
+                            <p className="mt-3 text-sm font-medium text-slate-800">Curso: Liderança Inclusiva</p>
+                            <p className="text-xs text-slate-500">Faltam 2 módulos</p>
+                        </div>
+                    </Card>
+                </div>
+                
+                <div className="bg-gradient-to-r from-indigo-600 to-violet-600 rounded-2xl p-8 text-white shadow-xl relative overflow-hidden">
+                    <div className="relative z-10">
+                        <h3 className="text-2xl font-bold mb-2">Oportunidade de Reskilling</h3>
+                        <p className="text-indigo-100 mb-6 max-w-lg">A IA detectou que suas habilidades em Gestão de Projetos podem ser potencializadas com ferramentas de Automação No-Code. Quer iniciar um micro-treinamento?</p>
+                        <button className="bg-white text-indigo-600 px-6 py-2 rounded-full font-bold hover:bg-indigo-50 transition-colors">
+                            Iniciar Jornada
+                        </button>
+                    </div>
+                    <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-1/4 translate-y-1/4">
+                        <Brain size={300} />
+                    </div>
+                </div>
+            </div>
+        );
+
+        const LearningPath = () => (
+            <div className="space-y-6 animate-fade-in">
+                <h2 className="text-2xl font-bold text-slate-900">Sua Trilha Evolutiva</h2>
+                <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                    <div className="space-y-8">
+                        <PathItem 
+                            status="completed" 
+                            title="Fundamentos de ESG" 
+                            desc="Compreensão básica de economia verde e impacto social."
+                        />
+                        <PathItem 
+                            status="current" 
+                            title="Colaboração Humano-IA" 
+                            desc="Aprendendo a delegar tarefas operacionais para agentes autônomos."
+                        />
+                        <PathItem 
+                            status="locked" 
+                            title="Design de Mundos Imersivos" 
+                            desc="Criação de espaços de trabalho em VR."
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+
+        const WellBeing = () => (
+            <div className="space-y-6 animate-fade-in">
+                <h2 className="text-2xl font-bold text-slate-900">Centro de Regeneração</h2>
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100">
+                        <h3 className="font-bold text-rose-800 mb-2">Pausa Inteligente</h3>
+                        <p className="text-rose-600 text-sm mb-4">O sistema detectou fadiga ocular. Sugerimos uma desconexão de 15 minutos.</p>
+                        <button className="bg-rose-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-rose-700 transition-colors">Ativar Modo Zen</button>
+                    </div>
+                    <div className="bg-emerald-50 p-6 rounded-2xl border border-emerald-100">
+                        <h3 className="font-bold text-emerald-800 mb-2">Monitoramento de Humor</h3>
+                        <p className="text-emerald-600 text-sm mb-4">Seu nível de estresse reduziu após as reuniões síncronas da manhã.</p>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Community = () => (
+            <div className="space-y-6 animate-fade-in">
+                <h2 className="text-2xl font-bold text-slate-900">Comunidade Global</h2>
+                <div className="grid gap-4">
+                    {[1,2,3].map(i => (
+                        <div key={i} className="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-4 shadow-sm">
+                            <div className="w-12 h-12 bg-slate-200 rounded-full" />
+                            <div className="flex-1">
+                                <h4 className="font-bold text-slate-800">Squad de Inovação #{i}</h4>
+                                <p className="text-sm text-slate-500">Focados em soluções para Cidades Inteligentes.</p>
+                            </div>
+                            <button className="text-indigo-600 font-medium text-sm hover:underline">Conectar</button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // --- APLICAÇÃO PRINCIPAL ---
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [sidebarOpen, setSidebarOpen] = useState(false);
+            const [messages, setMessages] = useState([
+                { id: 1, sender: 'gaia', text: 'Olá! Notei que você trabalhou 4 horas seguidas. Que tal uma pausa de 10 minutos para respirar? 🌱' },
+            ]);
+            const [inputMsg, setInputMsg] = useState('');
+
+            const handleSend = () => {
+                if (!inputMsg.trim()) return;
+                
+                const newMsg = { id: Date.now(), sender: 'user', text: inputMsg };
+                setMessages([...messages, newMsg]);
+                setInputMsg('');
+
+                setTimeout(() => {
+                    const iaResponse = { 
+                        id: Date.now() + 1, 
+                        sender: 'gaia', 
+                        text: 'Interessante. Baseado no seu perfil, essa habilidade será crucial em 2026. Adicionei um módulo curto sobre isso na sua trilha de Reskilling.' 
+                    };
+                    setMessages(prev => [...prev, iaResponse]);
+                }, 1500);
+            };
+
+            const renderContent = () => {
+                switch(activeTab) {
+                    case 'dashboard': return <Dashboard />;
+                    case 'learning': return <LearningPath />;
+                    case 'wellbeing': return <WellBeing />;
+                    case 'community': return <Community />;
+                    default: return <Dashboard />;
+                }
+            };
+
+            return (
+                <div className="flex h-screen bg-slate-50 text-slate-800 font-sans overflow-hidden">
+                    {/* Sidebar Mobile Overlay */}
+                    {sidebarOpen && (
+                        <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setSidebarOpen(false)} />
+                    )}
+
+                    {/* Sidebar */}
+                    <aside className={`fixed md:relative z-30 w-64 h-full bg-white border-r border-slate-200 transform transition-transform duration-300 ease-in-out ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 shadow-lg md:shadow-none flex flex-col`}>
+                        <div className="p-6 flex items-center gap-2 border-b border-slate-100">
+                            <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                <Leaf className="text-white w-5 h-5" />
+                            </div>
+                            <h1 className="text-xl font-bold text-slate-800 tracking-tight">Gaia<span className="text-emerald-500">.ai</span></h1>
+                        </div>
+                        
+                        <nav className="mt-6 px-4 space-y-2 flex-1">
+                            <SidebarItem icon={<Activity />} label="Visão Geral" active={activeTab === 'dashboard'} onClick={() => {setActiveTab('dashboard'); setSidebarOpen(false)}} />
+                            <SidebarItem icon={<Brain />} label="Trilha de Futuro" active={activeTab === 'learning'} onClick={() => {setActiveTab('learning'); setSidebarOpen(false)}} />
+                            <SidebarItem icon={<Coffee />} label="Bem-Estar & Saúde" active={activeTab === 'wellbeing'} onClick={() => {setActiveTab('wellbeing'); setSidebarOpen(false)}} />
+                            <SidebarItem icon={<Users />} label="Comunidade Híbrida" active={activeTab === 'community'} onClick={() => {setActiveTab('community'); setSidebarOpen(false)}} />
+                        </nav>
+
+                        <div className="p-4 bg-slate-50 border-t border-slate-200">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">GM</div>
+                                <div>
+                                    <p className="text-sm font-medium">Grupo Modelo</p>
+                                    <p className="text-xs text-slate-500">Estudante</p>
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    {/* Main Content */}
+                    <main className="flex-1 flex flex-col h-full overflow-hidden relative">
+                        {/* Header Mobile */}
+                        <header className="md:hidden bg-white p-4 border-b border-slate-200 flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center">
+                                    <Leaf className="text-white w-5 h-5" />
+                                </div>
+                                <h1 className="font-bold">Gaia</h1>
+                            </div>
+                            <button onClick={() => setSidebarOpen(true)}>
+                                <Menu className="text-slate-600" />
+                            </button>
+                        </header>
+
+                        <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                            <div className="max-w-5xl mx-auto">
+                                {renderContent()}
+                            </div>
+                        </div>
+
+                         {/* Chat Floating Widget */}
+                        <div className="fixed bottom-6 right-6 w-80 md:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[500px] z-50">
+                            <div className="bg-emerald-600 p-4 flex justify-between items-center text-white">
+                                <div className="flex items-center gap-2">
+                                    <Brain className="w-5 h-5" />
+                                    <span className="font-medium">Gaia Assistant</span>
+                                </div>
+                            </div>
+                            <div className="flex-1 p-4 overflow-y-auto bg-slate-50 h-64 space-y-3">
+                                {messages.map((msg) => (
+                                    <div key={msg.id} className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                        <div className={`max-w-[80%] p-3 rounded-xl text-sm ${msg.sender === 'user' ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-white border border-slate-200 text-slate-700 rounded-bl-none shadow-sm'}`}>
+                                            {msg.text}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="p-3 bg-white border-t border-slate-100 flex gap-2">
+                                <input 
+                                    type="text" 
+                                    value={inputMsg}
+                                    onChange={(e) => setInputMsg(e.target.value)}
+                                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                    placeholder="Pergunte sobre sua carreira..." 
+                                    className="flex-1 bg-slate-100 border-0 rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
+                                />
+                                <button onClick={handleSend} className="bg-emerald-600 text-white p-2 rounded-full hover:bg-emerald-700 transition-colors">
+                                    <TrendingUp className="w-4 h-4" />
+                                </button>
+                            </div>
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
